@@ -1,26 +1,332 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #faf9f7;
+  --foreground: #1a1a1a;
+  --accent: #f97316;
+  --accent-hover: #ea580c;
+  --accent-glow: rgba(249, 115, 22, 0.15);
+  --surface: rgba(255, 255, 255, 0.7);
+  --surface-hover: rgba(255, 255, 255, 0.85);
+  --border: rgba(0, 0, 0, 0.08);
+  --muted: #8a8a8a;
+  --gradient-1: #fef3c7;
+  --gradient-2: #fde68a;
+  --gradient-3: #fed7aa;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --background: #09090b;
+    --foreground: #f4f4f5;
+    --accent: #fb923c;
+    --accent-hover: #f97316;
+    --accent-glow: rgba(251, 146, 60, 0.2);
+    --surface: rgba(255, 255, 255, 0.05);
+    --surface-hover: rgba(255, 255, 255, 0.08);
+    --border: rgba(255, 255, 255, 0.08);
+    --muted: #71717a;
+    --gradient-1: #1e1b4b;
+    --gradient-2: #312e81;
+    --gradient-3: #7c2d12;
+  }
+}
+
+.dark {
+  --background: #09090b;
+  --foreground: #f4f4f5;
+  --accent: #fb923c;
+  --accent-hover: #f97316;
+  --accent-glow: rgba(251, 146, 60, 0.2);
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-hover: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.08);
+  --muted: #71717a;
+  --gradient-1: #1e1b4b;
+  --gradient-2: #312e81;
+  --gradient-3: #7c2d12;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-glow: var(--accent-glow);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ── Keyframes (unlayered — always available) ── */
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -40px) scale(1.05); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+@keyframes float-reverse {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-40px, 30px) scale(1.08); }
+  66% { transform: translate(25px, -35px) scale(0.92); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes pop-in {
+  0% { opacity: 0; transform: scale(0.8); }
+  60% { opacity: 1; transform: scale(1.05); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes emoji-float {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-120px) rotate(30deg) scale(0.5);
+  }
+}
+
+@property --border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes border-rotate {
+  0% { --border-angle: 0deg; }
+  100% { --border-angle: 360deg; }
+}
+
+@keyframes bounce-down {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@layer components {
+  /* ── Animated mesh gradient background ── */
+  .bg-mesh {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .bg-mesh::before,
+  .bg-mesh::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+    animation: float 20s ease-in-out infinite;
+  }
+
+  .bg-mesh::before {
+    width: 600px;
+    height: 600px;
+    background: var(--gradient-1);
+    top: -15%;
+    right: -10%;
+    animation-delay: 0s;
+  }
+
+  .bg-mesh::after {
+    width: 500px;
+    height: 500px;
+    background: var(--gradient-3);
+    bottom: -10%;
+    left: -10%;
+    animation-delay: -10s;
+  }
+
+  .bg-mesh-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.4;
+    width: 400px;
+    height: 400px;
+    background: var(--gradient-2);
+    top: 40%;
+    left: 30%;
+    animation: float-reverse 25s ease-in-out infinite;
+  }
+
+  .dark .bg-mesh::before,
+  .dark .bg-mesh::after,
+  .dark .bg-mesh-orb {
+    opacity: 0.3;
+  }
+
+  /* ── Glassmorphism card ── */
+  .glass {
+    background: var(--surface);
+    backdrop-filter: blur(20px) saturate(1.5);
+    -webkit-backdrop-filter: blur(20px) saturate(1.5);
+    border: 1px solid var(--border);
+  }
+
+  /* ── Floating emoji ── */
+  .floating-emoji {
+    position: fixed;
+    z-index: 50;
+    font-size: 24px;
+    opacity: 0;
+    pointer-events: none;
+    animation: emoji-float 6s ease-in-out forwards;
+  }
+
+  /* ── Animation utilities ── */
+  .animate-fade-in {
+    animation: fade-in 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .animate-pulse-subtle {
+    animation: pulse-subtle 1.5s ease-in-out infinite;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .animate-pop-in {
+    animation: pop-in 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .animate-overlay-in {
+    animation: overlay-in 0.2s ease-out;
+  }
+
+  .animate-modal-in {
+    animation: modal-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .animate-bounce-down {
+    animation: bounce-down 1.5s ease-in-out infinite;
+  }
+
+  /* ── Decode button ── */
+  .btn-decode {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f97316 0%, #fb923c 50%, #f97316 100%);
+    background-size: 200% auto;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 4px 20px -4px rgba(249, 115, 22, 0.4);
+  }
+
+  .btn-decode:hover:not(:disabled) {
+    background-position: right center;
+    box-shadow: 0 6px 28px -4px rgba(249, 115, 22, 0.5);
+    transform: translateY(-1px);
+  }
+
+  .btn-decode:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
+  }
+
+  .btn-decode:disabled {
+    opacity: 0.35;
+    box-shadow: none;
+  }
+
+  /* ── Glow ring on result card ── */
+  .result-card {
+    position: relative;
+  }
+
+  .result-card::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: 1.25rem;
+    padding: 1px;
+    background: conic-gradient(
+      from var(--border-angle),
+      transparent 0%,
+      var(--accent) 25%,
+      transparent 50%,
+      var(--accent) 75%,
+      transparent 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    animation: border-rotate 10s linear infinite;
+  }
+
+  /* ── Speech bubble tail ── */
+  .speech-tail {
+    position: relative;
+  }
+
+  .speech-tail::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 24px;
+    width: 16px;
+    height: 16px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    transform: rotate(45deg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  /* ── Compression badge ── */
+  .compression-badge {
+    background: linear-gradient(135deg, rgba(249, 115, 22, 0.15), rgba(251, 146, 60, 0.1));
+    border: 1px solid rgba(249, 115, 22, 0.2);
+  }
 }
