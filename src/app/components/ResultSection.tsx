@@ -26,10 +26,11 @@ export const ResultSection = forwardRef<HTMLDivElement, ResultSectionProps>(
       handleShare,
     } = useCardActions(originalText, result, theme);
 
-    const compressionRatio =
+    const rawRatio =
       originalText.length > 0 && result.length > 0
         ? Math.round((1 - result.length / originalText.length) * 100)
         : null;
+    const compressionRatio = rawRatio !== null && rawRatio > 0 ? rawRatio : null;
 
     return (
       <div ref={ref} className="animate-slide-up flex flex-col gap-4 -mt-2 sm:-mt-4">
@@ -45,7 +46,7 @@ export const ResultSection = forwardRef<HTMLDivElement, ResultSectionProps>(
             <span className="text-base">🎯</span>
             What they actually mean
           </h2>
-          {compressionRatio !== null && compressionRatio > 0 && (
+          {compressionRatio !== null && (
             <span className="compression-badge text-[11px] font-mono text-accent tabular-nums px-2.5 py-1 rounded-full">
               {compressionRatio}% shorter
             </span>

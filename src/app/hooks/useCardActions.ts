@@ -18,6 +18,9 @@ export function useCardActions(originalText: string, result: string, theme: Them
   const [savedImg, setSavedImg] = useState(false);
   const [downloaded, setDownloaded] = useState(false);
 
+  // Track current object URL so we can revoke it before creating a new one
+  const previewUrlRef = useRef<string | null>(null);
+
   // Cache the last-generated blob to avoid re-rendering the canvas
   const cachedBlobRef = useRef<Blob | null>(null);
   const cacheKeyRef = useRef("");
@@ -48,8 +51,10 @@ export function useCardActions(originalText: string, result: string, theme: Them
 
   const handlePreview = useCallback(async () => {
     try {
+      if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
       const blob = await getCardBlob();
       const url = URL.createObjectURL(blob);
+      previewUrlRef.current = url;
       setPreviewUrl(url);
     } catch (err) {
       console.error("Failed to generate card preview:", err);
@@ -57,9 +62,10 @@ export function useCardActions(originalText: string, result: string, theme: Them
   }, [getCardBlob]);
 
   const closePreview = useCallback(() => {
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+    previewUrlRef.current = null;
     setPreviewUrl(null);
-  }, [previewUrl]);
+  }, []);
 
   const handleSaveImage = useCallback(async () => {
     try {

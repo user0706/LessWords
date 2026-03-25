@@ -135,9 +135,10 @@ export async function POST(req: Request) {
         const retryDelay = errBody.error.details?.find(
           (d: Record<string, string>) => d["@type"]?.includes("RetryInfo")
         )?.retryDelay;
-        const retrySeconds = retryDelay
-          ? parseInt(retryDelay.replace("s", ""), 10)
-          : 60;
+        const parsed = retryDelay
+          ? Math.ceil(parseFloat(retryDelay.replace("s", "")))
+          : NaN;
+        const retrySeconds = Number.isFinite(parsed) && parsed > 0 ? parsed : 60;
 
         return NextResponse.json(
           {
@@ -149,8 +150,9 @@ export async function POST(req: Request) {
         );
       }
 
+      console.error("Gemini API error:", errBody?.error?.message);
       return NextResponse.json(
-        { error: errBody?.error?.message || "Gemini request failed." },
+        { error: "Translation service unavailable. Please try again later." },
         { status: 502 }
       );
     }

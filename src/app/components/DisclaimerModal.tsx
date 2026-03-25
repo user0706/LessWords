@@ -1,4 +1,5 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { CloseIcon } from "./icons";
 
 interface DisclaimerModalProps {
@@ -13,7 +14,15 @@ export function DisclaimerModal({ onClose }: DisclaimerModalProps) {
     [onClose],
   );
 
-  return (
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-overlay-in"
       onClick={handleBackdropClick}
@@ -49,6 +58,7 @@ export function DisclaimerModal({ onClose }: DisclaimerModalProps) {
 
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

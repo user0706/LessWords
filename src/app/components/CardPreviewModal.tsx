@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { CloseIcon } from "./icons";
 
@@ -7,6 +8,14 @@ interface CardPreviewModalProps {
 }
 
 export function CardPreviewModal({ previewUrl, onClose }: CardPreviewModalProps) {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
   return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-overlay-in"

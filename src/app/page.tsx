@@ -21,6 +21,7 @@ const EMOJIS = ["😤", "💅", "🙄", "💀", "🤡", "😭", "🔥", "💔", 
 
 export default function Home() {
   const [text, setText] = useState("");
+  const [submittedText, setSubmittedText] = useState("");
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [floatingEmojis, setFloatingEmojis] = useState<FloatingEmoji[]>([]);
 
@@ -46,6 +47,7 @@ export default function Home() {
   const handleTranslate = useCallback(async () => {
     const success = await translate(text);
     if (!success) return;
+    setSubmittedText(text);
     spawnEmojis();
     setTimeout(() => {
       resultRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -70,7 +72,7 @@ export default function Home() {
           {result && (
             <ResultSection
               ref={resultRef}
-              originalText={text}
+              originalText={submittedText}
               result={result}
               theme={theme}
             />
