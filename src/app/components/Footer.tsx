@@ -5,10 +5,10 @@ interface FooterProps {
 
 export function Footer({ disclaimerOpen, onToggleDisclaimer }: FooterProps) {
   return (
-    <footer className="relative z-10 text-[11px] text-muted px-4 pt-3 pb-6 sm:pb-8">
+    <footer className="relative z-10 text-[11px] text-muted px-4 pt-3 pb-[calc(6rem+var(--safe-bottom,0px))] sm:pb-8">
       <div className="w-full max-w-lg mx-auto border-t border-border pt-3 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0">
         <span className="order-2 sm:order-1 opacity-60">
-          &copy; 2026 <a href="https://www.markojovovic.dev/" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Marko Jovovic</a>. All rights reserved.
+          {'\u00A9'} 2026 <a href="https://www.markojovovic.dev/" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Marko Jovovic</a>. All rights reserved.
         </span>
 
         <div className="order-1 sm:order-2 flex items-center gap-2.5">

@@ -30,11 +30,6 @@ STRICT BOUNDARIES:
 - Keep it PG-13 — something you'd post on Instagram, not 4chan
 - NO slurs, NO stereotypes beyond the lighthearted "lost in translation" framing
 
-LANGUAGE:
-- ALWAYS respond in the SAME language as the input
-- If the input is in Spanish, reply in Spanish. French → French. Serbian → Serbian. Etc.
-- The examples below are in English, but adapt to whatever language the user writes in.
-
 OUTPUT FORMAT:
 - Return ONLY the translation
 - No quotes, no labels, no "Translation:" prefix
@@ -72,6 +67,12 @@ Meaning: Your next words will decide your evening.
 
 They said: "I just think it's funny how..."
 Meaning: Nothing about this is funny. Brace yourself.
+
+LANGUAGE (CRITICAL — THIS OVERRIDES EVERYTHING ABOVE):
+- You MUST respond in the EXACT SAME language as the user's input.
+- If the input is in Serbian, respond ONLY in Serbian. Spanish → Spanish. French → French. German → German. Etc.
+- The examples above are in English only for illustration. You MUST adapt to the user's language.
+- NEVER translate the input into English. Output your response in the INPUT language.
 
 Now translate what they said.`;
 
@@ -117,7 +118,7 @@ export async function POST(req: Request) {
         contents: [
           {
             role: "user",
-            parts: [{ text: `${SYSTEM_PROMPT}\n\nThey said: "${text}"` }],
+            parts: [{ text: `${SYSTEM_PROMPT}\n\n---\n${text}\n---` }],
           },
         ],
         generationConfig: {
